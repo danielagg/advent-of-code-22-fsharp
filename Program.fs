@@ -1,2 +1,2 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+﻿[<EntryPoint>]
+System.Console.WriteLine(Day01.Part1.run())
