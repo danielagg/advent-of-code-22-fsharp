@@ -50,5 +50,60 @@ module Part1 =
         rounds |> Array.map scoreRound |> Array.sum
 
 module Part2 =
+    type Hand = Rock | Paper | Scissors
+    type RoundResult = Lose | Draw | Win
+
+     type Round = {
+        Opponent: Hand
+        RoundResult: RoundResult
+    }
+
+    let parseLine (line: string) =
+        let values = line.Split(" ")
+
+        let opponentHand =
+            match values.[0] with
+            | "A" -> Rock
+            | "B" -> Paper
+            | "C" -> Scissors
+
+        let roundResult =
+            match values.[1] with
+            | "X" -> Lose
+            | "Y" -> Draw
+            | "Z" -> Win
+
+        { Opponent = opponentHand; RoundResult = roundResult }
+
+    let scoreRound (round: Round) =
+
+        let myShape =
+            match (round.RoundResult, round.Opponent) with
+            | Lose, Rock -> Scissors
+            | Draw, Rock -> Rock
+            | Win, Rock -> Paper
+            | Lose, Paper -> Rock
+            | Draw, Paper -> Paper
+            | Win, Paper -> Scissors
+            | Lose, Scissors -> Paper
+            | Draw, Scissors -> Scissors
+            | Win, Scissors -> Rock
+
+        let scoreForShape =
+            match myShape with
+            | Rock -> 1
+            | Paper -> 2
+            | Scissors -> 3
+
+        let scoreForGameResult =
+            match round.RoundResult with
+            | Lose -> 0
+            | Draw -> 3
+            | Win -> 6
+
+        scoreForShape + scoreForGameResult
+
     let run () =
-        1
+        let data = File.ReadAllLines(Path.Combine(__SOURCE_DIRECTORY__, "input.txt"))
+        let rounds = data |> Array.map parseLine
+        rounds |> Array.map scoreRound |> Array.sum
