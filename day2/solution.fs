@@ -18,12 +18,14 @@ module Part1 =
             | "A" -> Rock
             | "B" -> Paper
             | "C" -> Scissors
+            | _ -> failwith "Incorrect character"
 
         let myHand =
             match values.[1] with
             | "X" -> Rock
             | "Y" -> Paper
             | "Z" -> Scissors
+            | _ -> failwith "Incorrect character"
 
         { Opponent = opponentHand; Me = myHand }
 
@@ -66,12 +68,14 @@ module Part2 =
             | "A" -> Rock
             | "B" -> Paper
             | "C" -> Scissors
+            | _ -> failwith "Incorrect character"
 
         let roundResult =
             match values.[1] with
             | "X" -> Lose
             | "Y" -> Draw
             | "Z" -> Win
+            | _ -> failwith "Incorrect character"
 
         { Opponent = opponentHand; RoundResult = roundResult }
 
