@@ -2,6 +2,13 @@ namespace Day03
 
 open System.IO
 
+module private InternalModule =
+    let scoreCharacter (character: char) =
+        match character with
+        | c when c >= 'a' && c <= 'z' -> int c - int 'a' + 1
+        | c when c >= 'A' && c <= 'Z' -> int c - int 'A' + 27
+        | _ -> failwith "Unexpected character"
+
 module Part1 =
     let getDuplicatedCharacters (line: string) =
         let middleIndex = line.Length / 2
@@ -17,73 +24,26 @@ module Part1 =
         | [commonChar] -> Some commonChar
         | _ -> failwith "More than one duplicated characters"
 
-    let scoreCharacter (character: char) =
-        match character with
-        | c when c >= 'a' && c <= 'z' -> int c - int 'a' + 1
-        | c when c >= 'A' && c <= 'Z' -> int c - int 'A' + 27
-        | _ -> failwith "Unexpected character"
-
     let run () =
         let data = File.ReadAllLines(Path.Combine(__SOURCE_DIRECTORY__, "input.txt"))
         let duplicatedCharacters = data |> Array.map getDuplicatedCharacters |> Array.choose id
-        let scoresArray = duplicatedCharacters |> Array.map scoreCharacter
+        let scoresArray = duplicatedCharacters |> Array.map InternalModule.scoreCharacter
         scoresArray |> Array.sum
 
-// module Part2 =
-//     type Hand = Rock | Paper | Scissors
-//     type RoundResult = Lose | Draw | Win
+module Part2 =
+    let intersectionOfThreeSets (set1: Set<char>) (set2: Set<char>) (set3: Set<char>) =
+        set1
+        |> Set.intersect set2
+        |> Set.intersect set3
+        |> Set.minElement
 
-//      type Round = {
-//         Opponent: Hand
-//         RoundResult: RoundResult
-//     }
+    let getSharedCharacter (lines: string array) =
+        let line1 = lines.[0] |> Seq.toList |> Set.ofList
+        let line2 = lines.[1] |> Seq.toList |> Set.ofList
+        let line3 = lines.[2] |> Seq.toList |> Set.ofList
 
-//     let parseLine (line: string) =
-//         let values = line.Split(" ")
+        intersectionOfThreeSets line1 line2 line3
 
-//         let opponentHand =
-//             match values.[0] with
-//             | "A" -> Rock
-//             | "B" -> Paper
-//             | "C" -> Scissors
-
-//         let roundResult =
-//             match values.[1] with
-//             | "X" -> Lose
-//             | "Y" -> Draw
-//             | "Z" -> Win
-
-//         { Opponent = opponentHand; RoundResult = roundResult }
-
-//     let scoreRound (round: Round) =
-
-//         let myShape =
-//             match (round.RoundResult, round.Opponent) with
-//             | Lose, Rock -> Scissors
-//             | Draw, Rock -> Rock
-//             | Win, Rock -> Paper
-//             | Lose, Paper -> Rock
-//             | Draw, Paper -> Paper
-//             | Win, Paper -> Scissors
-//             | Lose, Scissors -> Paper
-//             | Draw, Scissors -> Scissors
-//             | Win, Scissors -> Rock
-
-//         let scoreForShape =
-//             match myShape with
-//             | Rock -> 1
-//             | Paper -> 2
-//             | Scissors -> 3
-
-//         let scoreForGameResult =
-//             match round.RoundResult with
-//             | Lose -> 0
-//             | Draw -> 3
-//             | Win -> 6
-
-//         scoreForShape + scoreForGameResult
-
-//     let run () =
-//         let data = File.ReadAllLines(Path.Combine(__SOURCE_DIRECTORY__, "input.txt"))
-//         let rounds = data |> Array.map parseLine
-//         rounds |> Array.map scoreRound |> Array.sum
+    let run () =
+        let data = File.ReadAllLines(Path.Combine(__SOURCE_DIRECTORY__, "input.txt")) |> Array.chunkBySize 3
+        data |> Array.map getSharedCharacter |> Array.map InternalModule.scoreCharacter |> Array.sum
